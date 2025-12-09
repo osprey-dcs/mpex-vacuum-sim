@@ -1,0 +1,363 @@
+record ( bo, "VAC_SIM:RP:On_Cmd" ) {
+    field ( VAL, 0 )
+    field ( SCAN, "Passive" )
+    field ( ZNAM, "Command Off" )
+    field ( ONAM, "Command On" )
+}
+
+record ( bi, "VAC_SIM:RP:On_Sts" ) {
+    field ( VAL, 0 )
+    field ( SCAN, "Passive" )
+    field ( ZNAM, "Pump Off" )
+    field ( ONAM, "Pump On" )
+    field ( FLNK, "VAC_SIM:PMP:calc.PROC PP" )
+}
+record ( bo, "VAC_SIM:TMP:On_Cmd" ) {
+    field ( VAL, 0 )
+    field ( SCAN, "Passive" )
+    field ( ZNAM, "Command Off" )
+    field ( ONAM, "Command On" )
+}
+
+record ( bi, "VAC_SIM:TMP:On_Sts" ) {
+    field ( VAL, 0 )
+    field ( SCAN, "Passive" )
+    field ( ZNAM, "Pump Off" )
+    field ( ONAM, "Pump On" )
+    field ( FLNK, "VAC_SIM:PMP:Calc.PROC PP" )
+}
+record ( bo, "VAC_SIM:SGV:Opn_Cmd") {
+   field ( VAL, 0 )
+   field ( SCAN, "Passive" )
+   field ( ZNAM, "Command Close" )
+   field ( ONAM, "Command Open" )
+}
+
+record ( bi, "VAC_SIM:SGV:Opn_Sts" ) {
+   field ( VAL, 0 )
+   field ( SCAN, "Passive" )
+   field ( ZNAM, "Closed" )
+   field ( ONAM, "Opened" )
+   field ( FLNK, "VAC_SIM:VLV:calc.PROC PP" )
+}
+record ( bo, "VAC_SIM:RGV:Opn_Cmd") {
+   field ( VAL, 0 )
+   field ( SCAN, "Passive" )
+   field ( ZNAM, "Command Close" )
+   field ( ONAM, "Command Open" )
+}
+
+record ( bi, "VAC_SIM:RGV:Opn_Sts" ) {
+   field ( VAL, 0 )
+   field ( SCAN, "Passive" )
+   field ( ZNAM, "Closed" )
+   field ( ONAM, "Opened" )
+   field ( FLNK, "VAC_SIM:VLV:calc.PROC PP" )
+}
+record ( bo, "VAC_SIM:PGV:Opn_Cmd") {
+   field ( VAL, 0 )
+   field ( SCAN, "Passive" )
+   field ( ZNAM, "Command Close" )
+   field ( ONAM, "Command Open" )
+}
+
+record ( bi, "VAC_SIM:PGV:Opn_Sts" ) {
+   field ( VAL, 0 )
+   field ( SCAN, "Passive" )
+   field ( ZNAM, "Closed" )
+   field ( ONAM, "Opened" )
+   field ( FLNK, "VAC_SIM:VLV:calc.PROC PP" )
+}
+record ( bo, "VAC_SIM:LGV:Opn_Cmd") {
+   field ( VAL, 0 )
+   field ( SCAN, "Passive" )
+   field ( ZNAM, "Command Close" )
+   field ( ONAM, "Command Open" )
+}
+
+record ( bi, "VAC_SIM:LGV:Opn_Sts" ) {
+   field ( VAL, 0 )
+   field ( SCAN, "Passive" )
+   field ( ZNAM, "Closed" )
+   field ( ONAM, "Opened" )
+   field ( FLNK, "VAC_SIM:VLV:calc.PROC PP" )
+}
+record ( bo, "VAC_SIM:FGV:Opn_Cmd") {
+   field ( VAL, 0 )
+   field ( SCAN, "Passive" )
+   field ( ZNAM, "Command Close" )
+   field ( ONAM, "Command Open" )
+}
+
+record ( bi, "VAC_SIM:FGV:Opn_Sts" ) {
+   field ( VAL, 0 )
+   field ( SCAN, "Passive" )
+   field ( ZNAM, "Closed" )
+   field ( ONAM, "Opened" )
+   field ( FLNK, "VAC_SIM:VLV:calc.PROC PP" )
+}
+# If train is roughing, pressure drops to 20
+record ( calcout, "VAC_SIM:GGE:delta" ) {
+    field ( SCAN, "1 second" )
+    # field ( TPRO, "1" )
+    field ( INPA, "VAC_SIM:TRAIN:Sts" )
+    field ( INPB, "VAC_SIM_MPC:CCG1:P_Ind" )
+    field ( CALC, "(A=5&&B>20)?B/5:((A=10||A=11)&&B>0.00000001)?B/2:B" )
+    # field ( FLNK, "VAC_SIM:GGE:fan.PROC PP" )
+    # field ( FLNK, "PrintInputs" )
+    field ( OUT, "VAC_SIM:GGE:fan PP" )
+}
+
+# Fanout to all train gauges
+record ( dfanout, "VAC_SIM:GGE:fan" ) {
+    field ( TPRO, "0" )
+    field ( DOL, "VAC_SIM:GGE:delta" ) # Input value
+    field ( SELM, "0" ) # Fanout to all
+    field ( OUTA, "VAC_SIM:CCG1:P_Ind" ) # CCG1
+    field ( OUTB, "VAC_SIM:CCG2:P_Ind" ) # CCG2
+    field ( OUTC, "VAC_SIM:PG:P_Ind" ) # PG
+    field ( OUTD, "VAC_SIM_MPC:CCG1:P_Ind" ) # Chamber
+}
+record ( ai, "VAC_SIM_MPC:CCG1:P_Ind" ) {
+    field ( EGU,  "Pascal" )
+    field ( SCAN, "1 second" )
+    # field ( TPRO, "1" ) # sim
+    field ( DESC, "Simulated Dump Tank Chamber Gauge")
+}
+record ( ai, "VAC_SIM:CCG1:P_Ind" ) {
+    field ( EGU,  "Pascal" )
+    field ( SCAN, "1 second" )
+    # field ( TPRO, "1" ) # sim
+    field ( DESC, "Simulated Train CCG1")
+}
+record ( ai, "VAC_SIM:CCG2:P_Ind" ) {
+    field ( EGU,  "Pascal" )
+    field ( SCAN, "1 second" )
+    # field ( TPRO, "1" ) # sim
+    field ( DESC, "Simulated Train CCG2")
+}
+record ( ai, "VAC_SIM:PG:P_Ind" ) {
+    # field ( INP, "VAC_SIM:GGE:sim PP"  ) # sim
+    field ( EGU,  "Pascal" )
+    field ( SCAN, "1 second" )
+    # field ( TPRO, "1" ) # sim
+    field ( DESC, "Simulated Train Pirani Gauge" )
+}
+record ( calcout, "VAC_SIM:RP:Sim" ) {
+    field ( INPA, "VAC_SIM:RP:On_Cmd CPP")
+    field ( SCAN, "Passive" )
+    field ( CALC, "A" )
+    field ( OUT, "VAC_SIM:RP:On_Sts PP" )
+}
+
+record ( calcout, "VAC_SIM:TMP:Sim" ) {
+    field ( INPA, "VAC_SIM:TMP:On_Cmd CPP")
+    field ( CALC, "A" )
+    field ( SCAN, "Passive" )
+    field ( OUT, "VAC_SIM:TMP:On_Sts PP" )
+}
+
+record ( calcout, "VAC_SIM:SGV:Sim" ) {
+   field ( INPA,  "VAC_SIM:SGV:Opn_Cmd CPP" )
+   field ( SCAN, "Passive" )
+   field ( CALC, "A" )
+   field ( OUT, "VAC_SIM:SGV:Opn_Sts PP" )
+}
+
+record ( calcout, "VAC_SIM:RGV:Sim" ) {
+   field ( INPA,  "VAC_SIM:RGV:Opn_Cmd CPP" )
+   field ( SCAN, "Passive" )
+   field ( CALC, "A" )
+   field ( OUT, "VAC_SIM:RGV:Opn_Sts PP" )
+}
+
+record ( calcout, "VAC_SIM:PGV:Sim" ) {
+   field ( INPA,  "VAC_SIM:PGV:Opn_Cmd CPP" )
+   field ( SCAN, "Passive" )
+   field ( CALC, "A" )
+   field ( OUT, "VAC_SIM:PGV:Opn_Sts PP" )
+}
+
+record ( calcout, "VAC_SIM:LGV:Sim" ) {
+   field ( INPA,  "VAC_SIM:LGV:Opn_Cmd CPP" )
+   field ( SCAN, "Passive" )
+   field ( CALC, "A" )
+   field ( OUT, "VAC_SIM:LGV:Opn_Sts PP" )
+}
+
+record ( calcout, "VAC_SIM:FGV:Sim" ) {
+   field ( INPA,  "VAC_SIM:FGV:Opn_Cmd CPP" )
+   field ( SCAN, "Passive" )
+   field ( CALC, "A" )
+   field ( OUT, "VAC_SIM:FGV:Opn_Sts PP" )
+}
+record ( calcout, "VAC_SIM:VLV:Calc" ) {
+    field ( SCAN, "Passive" )
+    field ( INPA, "VAC_SIM:PGV:Opn_Sts CPP" )
+    field ( INPB, "VAC_SIM:RGV:Opn_Sts CPP" )
+    field ( INPC, "VAC_SIM:FGV:Opn_Sts CPP" )
+    field ( INPD, "VAC_SIM:LGV:Opn_Sts CPP" )
+    field ( CALC, "(A * 2**3) + (B * 2**2) + (C * 2**1) + (D * 2**0)" )
+    field ( OUT, "VAC_SIM:VLV:Sts.RVAL PP" )
+}
+
+record ( mbbi, "VAC_SIM:VLV:Sts" ) {
+    field ( SCAN, "Passive" )
+    field ( VAL, 15 ) # Default value to undefined state: 15
+    field ( DTYP, "Raw Soft Channel" )
+    field ( PINI, "RUN" )
+
+    # OKAY STATES #
+    field ( ZRVL, "0" )
+    field ( ZRST, "All Closed" ) 
+
+    field ( ONVL, "6" )
+    field ( ONST, "Roughing" ) # RGV + FGV
+
+    field ( TWVL, "10" )
+    field ( TWST, "Turbopumping" ) # PGV + FGV
+
+    field ( THVL, "11" )
+    field ( THST, "Turbopumping - Sweeping" ) # PGV + FGV + LGV
+
+    field ( FRVL, "1" )
+    field ( FRST, "Purge Turbopump" ) # LGV
+
+    # WARNING STATES #
+    field ( FVVL, "7" )
+    field ( FVST, "Roughing - Warning" ) # RGV + FGV + LGV
+
+    field ( SXVL, "9" )
+    field ( SXST, "Turbopumping - Warning" ) # PGV + LGV
+
+    field ( SVVL, "8" )
+    field ( SVST, "Turbopumping - Warning" ) # PGV
+
+    field ( EIVL, "12" )
+    field ( EIST, "Warning" ) # PGV + RGV
+
+    field ( NIVL, "14" )
+    field ( NIST, "Warning" ) # PGV + RGV + LGV
+
+    field ( TEVL, "15" )
+    field ( TEST, "Warning" ) # PGV + RGV + FGV + LGV
+
+    # UNDEFINED STATES #
+    field ( ELVL, "2" )
+    field ( ELST, "Undefined" ) # FGV
+
+    field ( TVVL, "3" )
+    field ( TVST, "Undefined" ) # FGV + LGV
+
+    field ( TTVL, "4" )
+    field ( TTST, "Undefined" ) # RGV
+
+    field ( FTVL, "5" )
+    field ( FTST, "Undefined" ) # RGV + LGV
+
+    field ( FFVL, "13" )
+    field ( FFST, "Undefined" ) # PGV + RGV + LGV
+
+    field ( UDF, "1" ) # Mark as undefined if uninitialized
+    field ( FLNK, "VAC_SIM:TRAIN:Calc.PROC PP" )
+}
+
+record ( calcout, "VAC_SIM:PMP:Calc" ) {
+    field ( SCAN, "Passive" )
+    field ( INPA, "VAC_SIM:RP:On_Sts CPP" )
+    field ( INPB, "VAC_SIM:TMP:On_Sts CPP" )
+    field ( CALC, "(A * 2**1) + (B * 2**0)" )
+    field ( OUT, "VAC_SIM:PMP:Sts.RVAL PP" )
+}
+
+record ( mbbi, "VAC_SIM:PMP:Sts" ) {
+    field ( SCAN, "Passive" )
+    field ( VAL, 4 )
+    field ( DTYP, "Raw Soft Channel" )
+    field ( PINI, "RUN" )
+
+    # OKAY STATES #
+    field ( ZRVL, "0" )
+    field ( ZRST, "All Off" )
+
+    field ( ONVL, "2" )
+    field ( ONST, "Roughing" )
+
+    field ( TWVL, "3" )
+    field ( TWST, "Turbopumping" )
+
+    # WARNING STATES #
+    field ( THVL, "1" )
+    field ( THST, "Turbopumping - Warning" ) # Turbopumping w/o Backing Pump
+
+    # UNDEFINED STATES #
+    field ( FRVL, "4" )
+    field ( FRST, "Undefined" )
+
+    field ( UDF, "1" ) # Mark as undefined if uninitialized
+    field ( FLNK, "VAC_SIM:TRAIN:Calc.PROC PP" )
+}
+
+record ( calcout, "VAC_SIM:TRAIN:Calc" ) {
+    field ( SCAN, "Passive" )
+    field ( INPA, "VAC_SIM:PMP:Sts CPP" )
+    field ( INPB, "VAC_SIM:VLV:Sts CPP" )
+    # If within valid state range for Pmp and Vlv, then return unique value
+    ## Else if within warning range for either, then return warning value
+    field ( CALC, "(A<3 && B<5) ? ((A*4)+B) : ((B>4 && B<11) || A>2 ? 13 : 14 )" ) # Create unique values for output
+    field ( OUT, "VAC_SIM:TRAIN:Sts.VAL PP" )
+}
+
+record ( mbbi, "VAC_SIM:TRAIN:Sts" ) {
+    field ( SCAN, "Passive" )
+    field ( DESC, "Turbo train status" )
+    field ( VAL, 14)
+    field ( PINI, "RUN" )
+    
+    field ( ZRVL, "0" )
+    field ( ZRST, "Pmp Off/ Vlv Closed" )
+
+    field ( ONVL, "1" )
+    field ( ONST, "Undefined" )
+
+    field ( TWVL, "2" )
+    field ( TWST, "Undefined" )
+
+    field ( THVL, "3" )
+    field ( THST, "Undefined" )
+
+    field ( FRVL, "4" )
+    field ( FRST, "Undefined" )
+
+    field ( FVVL, "5" )
+    field ( FVST, "Roughing" )
+
+    field ( SXVL, "6" )
+    field ( SXST, "Undefined" )
+
+    field ( SVVL, "7" )
+    field ( SVST, "Undefined" )
+
+    field ( EIVL, "8" ) 
+    field ( EIST, "Undefined" )
+
+    field ( NIVL, "9" ) 
+    field ( NIST, "Undefined" )
+
+    field ( TEVL, "10" )
+    field ( TEST, "Turbopumping" )
+
+    field ( ELVL, "11" )
+    field ( ELST, "Turbopumping - Sweeping" )
+    
+    field ( TVVL, "12" )
+    field ( TVST, "Undefined" )
+
+    field ( TTVL, "13" )
+    field ( TTST, "Warning" )
+
+    field ( FTVL, "14" )
+    field ( FTST, "Undefined" )
+
+    field ( UDF, "1" ) # Mark as undefined if uninitialized
+}
